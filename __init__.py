@@ -31,7 +31,7 @@ bl_info = {
     "category": "Import-Export"
 }
 
-import os, sys, textwrap
+import os, sys, json, textwrap
 
 # force cleanup of sys.modules to avoid conflicts with the other addons for Blender
 for m in [
@@ -71,20 +71,29 @@ app.app.isPremium = os.path.isdir(os.path.join(os.path.dirname(os.path.realpath(
 _isBlender280 = bpy.app.version[1] >= 80
 
 
+# try reading the file <preferences.txt>
+try:
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "preferences.txt"), 'r') as preferencesFile:
+        preferences = json.load(preferencesFile)
+except Exception as e:
+    preferences = None
+
 class BlenderOsmPreferences(bpy.types.AddonPreferences):
     bl_idname = __name__
     
     dataDir: bpy.props.StringProperty(
         name = '',
         subtype = 'DIR_PATH',
-        description = "Directory to store downloaded OpenStreetMap and terrain files"
+        description = "Directory to store downloaded OpenStreetMap and terrain files",
+        default = os.path.expanduser(preferences["dataDir"])
     )
     
     assetsDir: bpy.props.StringProperty(
         name = '',
         subtype = 'DIR_PATH',
         description = "Directory with assets (building_materials.blend, vegetation.blend). "+
-            "It can be also set in the addon GUI"
+            "It can be also set in the addon GUI",
+        default = os.path.expanduser(preferences["assetsDir"])
     )
     
     mapboxAccessToken: bpy.props.StringProperty(
