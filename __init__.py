@@ -76,7 +76,7 @@ try:
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "preferences.txt"), 'r') as preferencesFile:
         preferences = json.load(preferencesFile)
 except Exception as e:
-    preferences = None
+    preferences = dict(dataDir='', assetsDir='')
 
 class BlenderOsmPreferences(bpy.types.AddonPreferences):
     bl_idname = __name__
